@@ -15,6 +15,10 @@ static VALUE cMeasureAllocations;
   unsigned LONG_LONG rb_gc_malloc_allocations();
 #endif
 
+#if defined(HAVE_RB_TOTAL_ALLOCATIONS)
+  unsigned long rb_total_allocations();
+#endif
+
 static double
 measure_allocations()
 {
@@ -25,6 +29,10 @@ measure_allocations()
 #elif defined(HAVE_RB_GC_MALLOC_ALLOCATIONS)
 #define MEASURE_ALLOCATIONS_ENABLED Qtrue
     return rb_gc_malloc_allocations();
+
+#elif defined(HAVE_RB_TOTAL_ALLOCATIONS)
+#define MEASURE_ALLOCATIONS_ENABLED Qtrue
+    return rb_total_allocations();
 
 #else
 #define MEASURE_ALLOCATIONS_ENABLED Qfalse
@@ -61,5 +69,5 @@ void rp_init_measure_allocations()
     rb_define_const(mProf, "ALLOCATIONS_ENABLED", MEASURE_ALLOCATIONS_ENABLED);
 
     cMeasureAllocations = rb_define_class_under(mMeasure, "Allocations", rb_cObject);
-    rb_define_singleton_method(cMeasureAllocations, "measure", prof_measure_allocations, 0);    
+    rb_define_singleton_method(cMeasureAllocations, "measure", prof_measure_allocations, 0);
 }
